@@ -5,13 +5,12 @@ A discord.js bot to run the latest edition of Reign of the Regions, a Discord-ba
 
 ## Credits
 
-Original concept ("Virginia Memorial Battle Simulator"): Jean
+Italicized names are Discord usernames.
 
-Design: Jean, SyFi, AOE, paradox
-
-Bot: paradox
-
-Creator of RotR and the reason we needed a bot in the first place: Mars
+* Original concept ("Virginia Memorial Battle Simulator"): *Jean Lafitte*
+* Design: *Jean Lafitte*, Cyrus Faisal, *Average Ohio Enjoyer*, Nick Gilbert
+* Bot code: Nick Gilbert, Cyrus Faisal
+* Creator of RotR and the reason we needed a bot in the first place: *Mars, God of War*
 
 ## Installation
 
@@ -45,3 +44,7 @@ Testing edits to the bot or just impatient? You can also deploy commands per-ser
     ```
 3. If you previously ran ``global-deploy-commands.js``, run ``delete-all-commands.js`` to remove duplicate versions of the bot's commands.
 4. Run ``guild-deploy-commands.js`` and start the bot.
+
+# License
+
+This project is licensed under the terms of the 3-Clause BSD License. See LICENSE.md for more details.
