@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "discord.js": "^14.21.0"
+    "discord.js": "^13.17.1"
   },
-  "name": "rotr_bot_v1_redux",
-  "description": "A discord.js bot to run the latest edition of Reign of the Regions, a Discord-based wargame.",
+  "name": "rotr_bot_full_dyn",
+  "description": "A discord.js bot to run Fully Dynamic Reign of the Regions, a Discord-based wargame.",
   "version": "1.0.0",
   "main": "bot.js",
   "scripts": {
@@ -11,12 +11,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheParadoxBox/rotr_bot_v1_redux.git"
+    "url": "git+https://github.com/TheParadoxBox/rotr_bot_full_dyn.git"
   },
   "author": "paradox",
-  "license": "UNLICENSED",
+  "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/TheParadoxBox/rotr_bot_v1_redux/issues"
+    "url": "https://github.com/TheParadoxBox/rotr_bot_full_dyn/issues"
   },
-  "homepage": "https://github.com/TheParadoxBox/rotr_bot_v1_redux#readme"
+  "homepage": "https://github.com/TheParadoxBox/rotr_bot_full_dyn#readme"
 }
