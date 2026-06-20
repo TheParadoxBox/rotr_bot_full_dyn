@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "discord.js": "^13.17.1"
+    "discord.js": "^14.26.4"
   },
   "name": "rotr_bot_full_dyn",
   "description": "A discord.js bot to run Fully Dynamic Reign of the Regions, a Discord-based wargame.",
