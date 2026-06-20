@@ -1,12 +1,16 @@
-# rotr_bot_v1_redux
-*Affectionately known as "Region Reigner 5000"*
+# rotr_bot_full_dyn
+*Affectionately known as "Fully Dynamic Region Reigner"*
 
-A discord.js bot to run the latest edition of Reign of the Regions, a Discord-based wargame.
+A discord.js bot to run Fully Dynamic Reign of the Regions, a Discord-based wargame. Now with more hexagons!
 
 ## Credits
 
 Italicized names are Discord usernames.
 
+* Bot code: Nick Gilbert
+* Creator of Fully Dynamic RotR: *Emperor :3*
+
+This bot was based on my other Discord bot, [Region Reigner 5000](https://github.com/TheParadoxBox/rotr_bot_v1_redux) for RotR V1 Redux.
 * Original concept ("Virginia Memorial Battle Simulator"): *Jean Lafitte*
 * Design: *Jean Lafitte*, Cyrus Faisal, *Average Ohio Enjoyer*, Nick Gilbert
 * Bot code: Nick Gilbert, Cyrus Faisal
