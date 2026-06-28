@@ -4,163 +4,113 @@ const { battle } = require("../../functions.js");
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName("battle")
-		.setDescription("Simulate a battle between an attacking and defending state.")
+		.setDescription("Simulate a battle between an attacking and defending division.")
         .addIntegerOption(option =>
             option.setName("num_attackers")
                 .setDescription("The number of attacking troops")
                 .setRequired(true)
                 .setMinValue(1)
-                .setMaxValue(10000)
         )
-        .addIntegerOption(option =>
-            option.setName("stance_attack")
-                .setDescription("The stance to be used by the attacking troops")
-                .setRequired(true)
-                .addChoices(
-                    { name: "Assault", value: 0 },
-                    { name: "Raid", value: 1 },
-                    { name: "Shock", value: 2 }
-                )
-        )
-        .addBooleanOption(option =>
-            option.setName("naval")
-                .setDescription("Whether or not this is a sea-to-land attack.")
-                .setRequired(true)
-        )
-
         .addIntegerOption(option =>
             option.setName("num_defenders")
                 .setDescription("The number of defending troops")
                 .setRequired(true)
                 .setMinValue(1)
-                .setMaxValue(10000)
         )
+
         .addIntegerOption(option =>
-            option.setName("stance_defend")
-                .setDescription("The stance to be used by the defending troops")
+            option.setName("atk_position")
+                .setDescription("The elevation of the attacking division")
                 .setRequired(true)
                 .addChoices(
-                    { name: "Hold", value: 0 },
-                    { name: "Guerilla", value: 1 },
-                    { name: "Entrench", value: 2 }
+                    { name: "Sea level", value: 0 },
+                    { name: "Hill", value: 1 },
+                    { name: "Mountain", value: 2 },
+                    { name: "Peak", value: 3 }
                 )
         )
         .addIntegerOption(option =>
-            option.setName("crits")
-                .setDescription("Whether or not to allow, disallow, or guarantee crits")
+            option.setName("def_position")
+                .setDescription("The elevation of the defending division")
                 .setRequired(true)
                 .addChoices(
-                    { name: "Standard crits", value: 0 },
-                    { name: "No crits", value: 1 },
-                    { name: "Guarantee round 1 crit for attackers", value: 2 },
-                    { name: "Guarantee round 1 crit for defenders", value: 3 }
+                    { name: "Sea level", value: 0 },
+                    { name: "Hill", value: 1 },
+                    { name: "Mountain", value: 2 },
+                    { name: "Peak", value: 3 }
                 )
+        )
+
+        .addNumberOption(option =>
+            option.setName("atk_add")
+                .setDescription("An additional modifier for the attackers (additive)")
+                .setRequired(true)
+        )
+        .addNumberOption(option =>
+            option.setName("def_add")
+                .setDescription("An additional modifier for the defenders (additive)")
+                .setRequired(true)
+        )
+
+        .addBooleanOption(option =>
+            option.setName("river")
+                .setDescription("Whether or not this attack crosses a river")
+                .setRequired(true)
         ),
-    
+
 	async execute(interaction) {
         // defer the reply until computation is done
         await interaction.deferReply();
 
-        // getters (what is this, java?)
+        // getters (what is this, java?
         const num_attackers = interaction.options.getInteger("num_attackers");
-        const stance_attack = interaction.options.getInteger("stance_attack");
-        const naval = interaction.options.getBoolean("naval");
         const num_defenders = interaction.options.getInteger("num_defenders");
-        const stance_defend = interaction.options.getInteger("stance_defend");
-        const crits = interaction.options.getInteger("crits");
+        const atk_position  = interaction.options.getInteger("atk_position");
+        const def_position  = interaction.options.getInteger("def_position");
+        const atk_add       = interaction.options.getNumber("atk_add");
+        const def_add       = interaction.options.getNumber("def_add");
+        const river         = interaction.options.getBoolean("river");
 
-        // fancy stance names
-        let fancyAtk;
-        let fancyDef;
-        switch(stance_attack) {
-            case 0:
-                fancyAtk = "Assault";
-                break;
-            case 1:
-                fancyAtk = "Raid";
-                break;
-            case 2:
-                fancyAtk = "Shock";
-                break;
-        }
-        switch(stance_defend) {
-            case 0:
-                fancyDef = "Hold";
-                break;
-            case 1:
-                fancyDef = "Guerrilla";
-                break;
-            case 2:
-                fancyDef = "Entrench";
-                break;
-        }
-        if (naval) fancyAtk += " via sea";
-
-        // fancy crit text
-        let fancyCrit = "";
-        switch(crits) {
-            // case 0;
-                // break;
-            case 1:
-                fancyCrit = "No crits";
-                break;
-            case 2:
-                fancyCrit = "Crit guaranteed for attackers";
-                break;
-            case 3:
-                fancyCrit = "Crit guaranteed for defenders";
-                break;
-        }
+        const river_text = (river) ? " over a river" : "";
 
         // battle logic
-        const [atkTroops, defTroops, atkRetreats, defRetreats, roundCount, atkCritCount, defCritCount] = battle(num_attackers, num_defenders, stance_attack, stance_defend, naval, crits);
+        const [atkWins, newLoserTroops] = battle(num_attackers, num_defenders, atk_position, def_position, atk_add, def_add, river);
 
-        // stupid thing that syfi wanted
-        const atkDed = num_attackers - atkTroops;
-        const defDed = num_defenders - defTroops;
-        
         // buncha logging shite
-        const date = new Date();
-        const time = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-        const time_spacer = " ".repeat(time.length + 3);
+        // TODO: switch from Date to Temporal
+        // this would already be done if the boneheads who maintain Node.JS and
+        // Arch Linux would fucking fix it. tbf Temporal is very new
+	    const date = new Date();
+    	const time = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    	const time_spacer = " ".repeat(time.length + 3);
         console.log(`[${time}] ${interaction.user.tag} ran /battle in ${interaction.guild?.name || 'DM'} #${interaction.channel?.name || 'DM'}`);
-        console.log(time_spacer + "Input: " + [num_attackers, num_defenders, stance_attack, stance_defend, naval, crits]);
-        console.log(time_spacer + "Output: " + [atkTroops, defTroops, atkRetreats, defRetreats, roundCount, atkCritCount, defCritCount]);
-        
-        let outcome = "Stalemate!";
-        if ( atkTroops > 0 ) { outcome = "Attackers take the state!" }
-        else if ( defTroops > 0 ) { outcome = "Defenders keep the state!" }
-        
+        console.log(time_spacer + "Input: " + [num_attackers, num_defenders, atk_position, def_position, atk_add, def_add, river]);
+        console.log(time_spacer + "Output: " + [atkWins, newLoserTroops]);
+
+        const loser_troops = (atkWins) ? num_defenders : num_attackers;
+        const outcome = (atkWins) ? "Attackers win!" : "Defenders hold!";
+        const loser_text = (atkWins) ? "Defender" : "Attacker";
+
         // set thumbnail
-        let thumbnail;
-        if ( atkTroops > 0 ) { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/atkWin.png" }
-        else { thumbnail = "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/defWin.png" }
+        const thumbnail = (atkWins) ? "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/atkWin.png"
+                                    : "https://raw.githubusercontent.com/TheParadoxBox/rotr_bot_v1_redux/refs/heads/main/assets/defWin.png";
 
         // build the embed with the embed builder (waow)
 		const battleEmbed = new EmbedBuilder()
-            .setColor(0x3c3b6e)
-            .setTitle(`Battle: ${num_attackers} ${fancyAtk} vs. ${num_defenders} ${fancyDef}`)
+            .setColor(0xce2087)
+            .setTitle(`Battle: ${num_attackers} vs. ${num_defenders}${river_text}`)
             .setThumbnail(thumbnail)
             .addFields(
-                { name: "Remaining attackers", value: `${atkTroops}`, inline: true },
-                { name: "Remaining defenders", value: `${defTroops}`, inline: true },
+                { name: "Starting attackers", value: `${num_attackers}`, inline: true },
+                { name: "Starting defenders", value: `${num_defenders}`, inline: true },
                 { name: "\u200B", value: "\u200B" },
-                { name: "Retreated attackers", value: `${atkRetreats}`, inline: true },
-                { name: "Retreated defenders", value: `${defRetreats}`, inline: true },
+                { name: `New ${loser_text.toLowerCase()}s`, value: `${newLoserTroops}`, inline: true },
+                { name: `${loser_text} losses`, value: `${loser_troops - newLoserTroops}`, inline: true },
                 { name: "\u200B", value: "\u200B" },
-                { name: "Total attackers lost", value: `${num_attackers - atkTroops}`, inline: true },
-                { name: "Total defenders lost", value: `${num_defenders - defTroops}`, inline: true },
-                { name: "\u200B", value: "\u200B" },
-                { name: "Total attacker crits", value: `${atkCritCount}`, inline: true },
-                { name: "Total defender crits", value: `${defCritCount}`, inline: true },
-                { name: "\u200B", value: "\u200B" },
-                { name: "Rounds fought", value: `${roundCount}`, inline: true },
                 { name: "Result", value: outcome, inline: true }
             )
-            // .setImage(img) // will use later
             .setTimestamp()
 
-        if (fancyCrit != "") { battleEmbed.setDescription(fancyCrit); }
         // update reply now that computation is done
         await interaction.editReply({ content: null, embeds: [battleEmbed] });
 	},
